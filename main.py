@@ -9,9 +9,9 @@ latest_frame = None
 
 # 📤 ESP32 uploads frame
 @app.post("/upload-frame")
-async def upload_frame(file: UploadFile = File(...)):
+async def upload_frame(request: Request):
     global latest_frame
-    latest_frame = await file.read()
+    latest_frame = await request.body()
     return {"status": "frame received"}
 
 
