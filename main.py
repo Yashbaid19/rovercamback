@@ -6,13 +6,6 @@ app = FastAPI()
 
 latest_frame = None
 
-import os
-
-@app.get("/api/config/camera-feeds")
-def get_camera_feed():
-    return {
-        "rover_feed_url": os.getenv("ROVER_FEED_URL")
-    }
 
 @app.get("/")
 def home():
