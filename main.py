@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, WebSocket, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 import asyncio
 
@@ -7,7 +7,11 @@ app = FastAPI()
 latest_frame = None
 
 
-# 📤 ESP32 uploads frame
+@app.get("/")
+def home():
+    return {"status": "Server running 🚀"}
+
+
 @app.post("/upload-frame")
 async def upload_frame(request: Request):
     global latest_frame
@@ -15,7 +19,6 @@ async def upload_frame(request: Request):
     return {"status": "frame received"}
 
 
-# 🔴 MJPEG STREAM
 def mjpeg_generator():
     global latest_frame
     while True:
@@ -35,15 +38,3 @@ def stream():
         mjpeg_generator(),
         media_type="multipart/x-mixed-replace; boundary=frame"
     )
-
-
-# ⚡ WEBSOCKET STREAM
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    global latest_frame
-
-    while True:
-        if latest_frame:
-            await websocket.send_bytes(latest_frame)
-        await asyncio.sleep(0.1)
